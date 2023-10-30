@@ -12,6 +12,14 @@ class ProductSchema(BaseModel):
     image: Optional[str] = None
     rating: Optional[int] = None
     number_of_ratings: Optional[int] = None
+
+class ProductCreateSchema(BaseModel):
+    name: str
+    description: str
+    price: float
+    quantity: int
+    category_id: int
+    image: Optional[str] = None
  
 class ProductUpdateSchema(BaseModel):
     name: Optional[str] = None

@@ -8,7 +8,7 @@ from model.data.model import User
 from db_config.session import get_user_db
 from config import SECRET_KEY
 sys.path.append('/home/xbtio/Desktop/e-commerce/backend')
-from .email_service import send_verification_token_to_user, send_reset_token_to_user
+from .email_service import send_verification_token_to_user_sync, send_reset_token_to_user_sync
 
 SECRET = SECRET_KEY
 
@@ -23,13 +23,13 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        await send_reset_token_to_user(user.name, user.email, token)
+        send_reset_token_to_user_sync.delay(user.name, user.email, token)
         print(f"User {user.id} has forgot their password. Reset token: {token}")
 
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        await send_verification_token_to_user(user.name, user.email, token)
+        send_verification_token_to_user_sync.delay(user.name, user.email, token)
         print(f"Verification requested for user {user.id}. Verification token: {token}")
 
 

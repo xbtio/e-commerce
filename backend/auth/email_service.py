@@ -1,13 +1,17 @@
 import asyncio
 import aiosmtplib
-import sys
+import smtplib
 from email.message import EmailMessage
 from config import SMTP_SECRET, SMTP_USER
+from celery import Celery
 
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 465
 
-async def send_verification_token(username: str, to_email: str, token: str):
+celery = Celery('tasks', broker='redis://localhost:6379')
+
+
+def verification_token(username: str, to_email: str, token: str):
     email = EmailMessage()
     email['Subject'] = 'Verification token'
     email['From'] = SMTP_USER
@@ -21,7 +25,7 @@ async def send_verification_token(username: str, to_email: str, token: str):
     )
     return email
 
-async def send_reset_pass_token(username: str, to_email: str, token: str):
+def reset_pass_token(username: str, to_email: str, token: str):
     email = EmailMessage()
     email['Subject'] = 'Reset token'
     email['From'] = SMTP_USER
@@ -35,26 +39,19 @@ async def send_reset_pass_token(username: str, to_email: str, token: str):
     )
     return email
 
-async def send_verification_token_to_user(username: str, to_email: str, token: str):
-    email = await send_verification_token(username, to_email, token)
+@celery.task
+def send_verification_token_to_user_sync(username: str, to_email: str, token: str):
+    email = verification_token(username, to_email, token)  # Assuming a synchronous function for generating the email
 
-    smtp_client = aiosmtplib.SMTP(port=SMTP_PORT, hostname=SMTP_HOST, use_tls=True)
+    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
+        server.login(SMTP_USER, SMTP_SECRET)
+        server.send_message(email)
+    
+        
+@celery.task
+def send_reset_token_to_user_sync(username: str, to_email: str, token: str):
+    email = reset_pass_token(username, to_email, token)  # Assuming a synchronous function for generating the email
 
-    try:
-        await smtp_client.connect()
-        await smtp_client.login(SMTP_USER, SMTP_SECRET)
-        await smtp_client.send_message(email)
-    finally:
-        await smtp_client.quit()
-
-async def send_reset_token_to_user(username: str, to_email: str, token: str):
-    email = await send_reset_pass_token(username, to_email, token)
-
-    smtp_client = aiosmtplib.SMTP(port=SMTP_PORT, hostname=SMTP_HOST, use_tls=True)
-
-    try:
-        await smtp_client.connect()
-        await smtp_client.login(SMTP_USER, SMTP_SECRET)
-        await smtp_client.send_message(email)
-    finally:
-        await smtp_client.quit()
+    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
+        server.login(SMTP_USER, SMTP_SECRET)
+        server.send_message(email)

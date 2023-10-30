@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from db_config.session import get_async_session
 from repository.product import ProductRepo
-from model.request.product import ProductSchema, ProductUpdateSchema
+from model.request.product import ProductSchema, ProductUpdateSchema, ProductCreateSchema
 from fastapi_users import FastAPIUsers
 from model.data.product import Product
 from model.data.model import User
@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 @router.post("/", dependencies=[Depends(current_superuser)])
-async def create_product(product: ProductSchema, db: AsyncSession = Depends(get_async_session)):
+async def create_product(product: ProductCreateSchema, db: AsyncSession = Depends(get_async_session)):
     product_repo = ProductRepo(db)
     content_dict = product.model_dump()
     print(content_dict)

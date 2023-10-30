@@ -81,7 +81,7 @@ class ReviewService:
                 total_rating = await review_repo.get_total_rating(product_id)
                 total_reviews = await review_repo.get_total_reviews(product_id)
                 if total_rating is not None and total_reviews is not None:
-                    new_average_rating = current_average_rating if total_reviews == 0 else total_rating / total_reviews
+                    new_average_rating = current_average_rating if total_reviews == 0 else (total_rating - review.rating) / (total_reviews - 1)
                 else:
                     total_rating = 0
                     total_reviews = 0

@@ -39,3 +39,5 @@ websockets==11.0.3
 gunicorn
 gradio_client==0.2.7
 aiosmtplib
+redis
+celery

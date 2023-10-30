@@ -22,7 +22,6 @@ async def get_token():
 
 
 class SdekService:
-    
     async def get_status_about_order(self, sdeck_id: int):
         token = await get_token()
         headers = {'Authorization': f'Bearer {token}'}
