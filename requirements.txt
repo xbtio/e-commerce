@@ -41,3 +41,5 @@ gradio_client==0.2.7
 aiosmtplib
 redis
 celery
+fastapi_cache2
+flower

@@ -10,6 +10,7 @@ RUN pip install -r /app/requirements.txt
 COPY . .
 
 RUN chmod a+x docker/*.sh
+# RUN chown -R 999:999 /var/lib/postgresql/data
 
 
 

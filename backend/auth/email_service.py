@@ -2,13 +2,13 @@ import asyncio
 import aiosmtplib
 import smtplib
 from email.message import EmailMessage
-from config import SMTP_SECRET, SMTP_USER
+from config import SMTP_SECRET, SMTP_USER, REDIS_HOST, REDIS_PORT
 from celery import Celery
 
 SMTP_HOST = "smtp.gmail.com"
 SMTP_PORT = 465
 
-celery = Celery('tasks', broker='redis://localhost:6379')
+celery = Celery('tasks', broker=f'redis://{REDIS_HOST}:{REDIS_PORT}')
 
 
 def verification_token(username: str, to_email: str, token: str):

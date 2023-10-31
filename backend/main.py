@@ -1,7 +1,8 @@
 from model.data.model import User
-import uuid
+from redis import asyncio as aioredis
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
@@ -11,7 +12,7 @@ from auth.auth import auth_backend
 from auth.schemas import UserCreate, UserRead, UserUpdate
 
 from api import product, category, review, blog, review_blog, sdek, address
-
+from config import REDIS_HOST, REDIS_PORT
 
 
 
@@ -71,3 +72,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup_event():
+    redis = aioredis.from_url(f"redis://{REDIS_HOST}:{REDIS_PORT}", encoding="utf8", decode_responses=True)
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")

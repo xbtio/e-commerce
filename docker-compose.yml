@@ -3,9 +3,20 @@ services:
   db:
     image: postgres:15
     container_name: db_app
+    command: -p 1221
+    expose:
+      - 1221
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     env_file:
       - .env-non-dev
-  
+
+  redis: 
+    image: redis:7
+    container_name: redis_app
+
+
+
   app:
     build: 
       context: .
@@ -17,3 +28,30 @@ services:
       - "9999:8000"
     depends_on:
       - db
+      - redis
+
+  celery:
+    build: 
+      context: .
+    env_file:
+      - .env-non-dev
+    container_name: celery_app
+    command: ['/app/docker/celery.sh', 'celery']
+    depends_on:
+      - redis
+
+  flower:
+    build: 
+      context: .
+    env_file:
+      - .env-non-dev
+    container_name: flower_app
+    command: ['/app/docker/celery.sh', 'flower']
+    depends_on:
+      - celery
+      - redis
+    ports: 
+      - 7777:5555
+
+volumes:
+  pgdata:
