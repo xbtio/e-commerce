@@ -99,16 +99,14 @@ class ToLocation(BaseModel):
     address: str
 
 class FromLocation(BaseModel):
-    code: Optional[str] = None
-    fias_guid: Optional[str] = None
-    postal_code: Optional[str] = None
+    code: Optional[int] = None
+    city: Optional[str] = None
+    country_code: Optional[str] = None
+    country: Optional[str] = None
+    region: Optional[str] = None
+    region_code: Optional[int] = None
     longitude: Optional[float] = None
     latitude: Optional[float] = None
-    country_code: Optional[str] = None
-    region: Optional[str] = None
-    sub_region: Optional[str] = None
-    city: Optional[str] = None
-    kladr_code: Optional[str] = None
     address: str
 
 
@@ -118,7 +116,7 @@ class Services(BaseModel):
 
 class Packages(BaseModel):
     number: str
-    weight: str
+    weight: int
     length: int
     width: int
     height: int
@@ -133,5 +131,5 @@ class Order(BaseModel):
     recipient: Recipient
     from_location: FromLocation
     to_location: ToLocation
-    services: list[Services]
+    services: Optional[list[Services]] = None
     packages: list[Packages]

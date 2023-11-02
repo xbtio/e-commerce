@@ -1,14 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from country.country import get_country_info
 from fastapi import HTTPException, status
-from repository.factory import RepositoryFactory
-
+from repository.address import AddressRepo
 
 
 
 class AddressService:
     def __init__(self, db: AsyncSession) -> None:
-        self.repo = RepositoryFactory(db).get_address_repo
+        self.repo = AddressRepo(db)
     
     async def create_address(self, blog):
         code = await get_country_info(blog['country'])

@@ -62,7 +62,7 @@ app.include_router(address.router, prefix='/api/address', tags=['address'])
 
 origins = [
     "http://localhost",
-    "http://localhost:8080",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(

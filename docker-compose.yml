@@ -16,7 +16,6 @@ services:
     container_name: redis_app
 
 
-
   app:
     build: 
       context: .
