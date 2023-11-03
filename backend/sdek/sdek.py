@@ -46,9 +46,17 @@ class SdekService:
         if token:
             async with httpx.AsyncClient(headers=headers) as client:
                 response = await client.post('https://api.cdek.ru/v2/orders', json=order.model_dump())
-                return response
+                return response.json()
         return None
     
+    async def refuse_order(self, sdek_uuid: str):
+        token = await get_token()
+        headers = {'Authorization': f'Bearer {token}'}
+        if token:
+            async with httpx.AsyncClient(headers=headers) as client:
+                response = await client.post(f'https://api.cdek.ru/v2/orders/{sdek_uuid}/refusal')
+                return response.json()
+        return None
 
 
 

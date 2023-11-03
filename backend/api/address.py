@@ -36,17 +36,17 @@ async def update_address(address: AddressUpdate, user: User = Depends(current_us
     return JSONResponse({"message": "address update failed"})
 
 @router.delete('/')
-async def delete_address(id: int, user: User = Depends(current_user), db: AsyncSession = Depends(get_async_session)):
+async def delete_address(user: User = Depends(current_user), db: AsyncSession = Depends(get_async_session)):
     address_service = AddressService(db)
-    result = await address_service.delete_address(id)
+    result = await address_service.delete_address(user.id)
     if result:
         return JSONResponse({"message": "address deleted successfully"})
     return JSONResponse({"message": "address delete failed"})
 
-@router.get('/{id}')
-async def get_by_user_id(id: int, user: User = Depends(current_user), db: AsyncSession = Depends(get_async_session)):
+@router.get('/me')
+async def get_by_user_id(user: User = Depends(current_user), db: AsyncSession = Depends(get_async_session)):
     address_service = AddressService(db)
-    result = await address_service.get_address_by_user_id(id)
+    result = await address_service.get_address_by_user_id(user.id)
     return result
 
 @router.get('/', dependencies=[Depends(current_superuser)])

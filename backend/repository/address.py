@@ -27,7 +27,7 @@ class AddressRepo:
     
     async def delete_address(self, id: int):
         try:
-            await self.db.execute(delete(Address).where(Address.id == id))
+            await self.db.execute(delete(Address).where(Address.user_id == id))
             await self.db.commit()
         except Exception as e:
             print(e)

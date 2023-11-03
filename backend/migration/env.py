@@ -9,6 +9,7 @@ from model.data.model import User
 from model.data.review import Review
 from model.data.blog import Blog, ReviewBlog
 from model.data.address import Address
+from model.data.order import Order
 
 from alembic import context
 
