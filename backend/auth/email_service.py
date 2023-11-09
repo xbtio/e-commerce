@@ -33,7 +33,7 @@ def reset_pass_token(username: str, to_email: str, token: str):
 
     email.set_content(
         '<div>'
-        f'<h1 style="color: red;">Hello, {username}, here is your reset token - {token}</h1>'
+        f'<h1 style="color: red;">Hello, {username}, here is your reset token - http://localhost:5173/auth/reset-password/{token}</h1>'
         '</div>',
         subtype='html'
     )
@@ -44,7 +44,7 @@ def send_verification_token_to_user_sync(username: str, to_email: str, token: st
     email = verification_token(username, to_email, token)  # Assuming a synchronous function for generating the email
 
     with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
-        server.login(SMTP_USER, SMTP_SECRET)
+        server.login(SMTP_USER, SMTP_SECRET) # type: ignore
         server.send_message(email)
     
         
@@ -53,5 +53,5 @@ def send_reset_token_to_user_sync(username: str, to_email: str, token: str):
     email = reset_pass_token(username, to_email, token)  # Assuming a synchronous function for generating the email
 
     with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as server:
-        server.login(SMTP_USER, SMTP_SECRET)
+        server.login(SMTP_USER, SMTP_SECRET) # type: ignore
         server.send_message(email)

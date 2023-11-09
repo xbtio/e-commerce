@@ -1,4 +1,4 @@
-
+from turtle import title
 from sqlalchemy import Time, Column, ForeignKey, Integer, String, Float, Date, MetaData
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from db_config.db_connection import Base
@@ -17,10 +17,20 @@ class Product(Base):
     image: Mapped[str] = mapped_column(String(150), nullable=False)
     rating: Mapped[float] = mapped_column(Float, nullable=False)
     number_of_ratings: Mapped[int] = mapped_column(Integer, nullable=False)
+    weigth: Mapped[int] = mapped_column(Integer, nullable=False)
 
 
     category = relationship("Category", backref="product")
     review = relationship("Review", backref="product", cascade="all, delete-orphan")
+    product_description = relationship("ProductDescription", backref="product", cascade="all, delete-orphan")
+
+class ProductDescription(Base):
+    __tablename__ = 'product_description'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('product.id'))
+    title: Mapped[str] = mapped_column(String(150), nullable=False)
+    description: Mapped[str] = mapped_column(String(350), nullable=False)
+
 
 class Category(Base):
     __tablename__ = 'category'

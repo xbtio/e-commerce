@@ -14,8 +14,8 @@ SECRET = SECRET_KEY
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
-    reset_password_token_secret = SECRET
-    verification_token_secret = SECRET
+    reset_password_token_secret = SECRET # type: ignore
+    verification_token_secret = SECRET # type: ignore
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
         print(f"User {user.id} has registered.")

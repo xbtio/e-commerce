@@ -33,12 +33,12 @@ class SdekService:
                 return response.json()['entity']
         return None
     
-    async def create_order(self, name_of_recepient: str, email: str, phone_of_recepient: Phone, address_of_recepient: Address, comment: str):
+    async def create_order(self, name_of_recepient: str, email: str, phone_of_recepient: str, additional_num: str, address_of_recepient: Address, comment: str):
         token = await get_token()
         headers = {'Authorization': f'Bearer {token}'}
         phone = Phone(number="905073361421")
         sender = Sender(company="NVİTAL SAĞLIK HİZMETLERİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ", name="Айгерим", phones=[phone])
-        recipient = Recipient(name=name_of_recepient, email=email, phones=[phone_of_recepient])
+        recipient = Recipient(name=name_of_recepient, email=email, phones=[Phone(number=phone_of_recepient, additional=additional_num)])
         
         from_location = FromLocation(code=11354, city="Стамбул", country_code="TR", country="Турция", region="Стамбул", region_code=788, longitude=0, latitude=0, address="Cumhuriyet, Kazım Orbay Cd. no3, 34381 Şişli/İstanbul, Турция")
         to_location = ToLocation(postal_code=address_of_recepient.postal_code, country_code=address_of_recepient.code, city=address_of_recepient.city, address=address_of_recepient.address)
