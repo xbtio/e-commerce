@@ -48,6 +48,10 @@ class ReviewRepo:
         result =  await self.db.execute(select(Review).where(Review.id == id))
         return result.scalars().first()
     
+    async def get_review_by_product_id(self, product_id: int):
+        result =  await self.db.execute(select(Review).where(Review.product_id == product_id))
+        return result.scalars().all()
+    
     async def get_total_rating(self, product_id: int):
         result = await self.db.execute(select(func.sum(Review.rating)).where(Review.product_id == product_id))
         return result.scalars().first()

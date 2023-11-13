@@ -1,6 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
-
+from typing import Optional, List
+from .product_description import ProductDescriptionCreateSchema
 
 
 class ProductSchema(BaseModel):

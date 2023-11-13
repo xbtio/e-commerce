@@ -50,3 +50,9 @@ async def delete_review(id: int, db: AsyncSession = Depends(get_async_session)):
     if result:
         return JSONResponse({"message": "review deleted successfully"})
     return JSONResponse({"message": "review deletion failed"})
+
+@router.get("/{product_id}")
+async def get_review_by_product_id(product_id: int, db: AsyncSession = Depends(get_async_session)):
+    review_service = ReviewService(db)
+    result = await review_service.get_review_by_product_id(product_id)
+    return result

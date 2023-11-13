@@ -7,7 +7,7 @@ class ProductDescriptionCreateSchema(BaseModel):
     description: str
 
 class ProductDescriptionUpdateSchema(BaseModel):
-    product_id: int
+    id: int
     title: str
     description: str
 

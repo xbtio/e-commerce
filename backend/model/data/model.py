@@ -13,4 +13,5 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     review_blog = relationship("ReviewBlog", back_populates="user")
     address = relationship("Address", back_populates="user")
     order = relationship("Order", back_populates="user")
+    shopping_cart = relationship("ShoppingCart", back_populates="user")
 

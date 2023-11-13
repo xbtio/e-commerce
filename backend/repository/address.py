@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from model.data.address import Address
 from sqlalchemy import update, delete, select, insert
 
+
 class AddressRepo:
     def __init__(self, db: AsyncSession):
         self.db = db

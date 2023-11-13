@@ -10,6 +10,7 @@ from model.data.review import Review
 from model.data.blog import Blog, ReviewBlog
 from model.data.address import Address
 from model.data.order import Order
+from model.data.cart import ShoppingCart, ShoppingCartItem
 
 from alembic import context
 

@@ -23,11 +23,12 @@ class Product(Base):
     category = relationship("Category", backref="product")
     review = relationship("Review", backref="product", cascade="all, delete-orphan")
     product_description = relationship("ProductDescription", backref="product", cascade="all, delete-orphan")
+    shopping_cart_item = relationship("ShoppingCartItem", backref="product", cascade="all, delete-orphan")
 
 class ProductDescription(Base):
     __tablename__ = 'product_description'
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('product.id'))
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('product.id', ondelete='cascade'))
     title: Mapped[str] = mapped_column(String(150), nullable=False)
     description: Mapped[str] = mapped_column(String(350), nullable=False)
 

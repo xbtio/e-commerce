@@ -2,17 +2,7 @@ from pydantic import BaseModel
 from typing import Optional, Union
 import datetime
 
-'''
-    __tablename__ = 'address'
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    address: Mapped[str] = mapped_column(String(300), nullable=False)
-    city: Mapped[str] = mapped_column(String(100), nullable=False)
-    country: Mapped[str] = mapped_column(String(100), nullable=False)
-    code: Mapped[str] = mapped_column(String(50), nullable=False)
-    postal_code: Mapped[str] = mapped_column(String(100), nullable=False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id'), nullable=False)
 
-'''
 # create addresscreates 
 class AddressCreate(BaseModel):
     address: str

@@ -1,6 +1,7 @@
 from typing import Dict, Any, List
 from sqlalchemy.ext.asyncio import AsyncSession
-from model.data.product import Product
+from model.data.product import Product, ProductDescription
+from model.request.product_description import ProductDescriptionCreateSchema
 from sqlalchemy import update, delete, select, insert
 
 
@@ -8,14 +9,28 @@ class ProductRepo:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
     
-    async def insert_product(self, product: Dict):
+    async def insert_product(self, product: Dict, descriptions: List[Dict[str, Any]]):
         try:
-            await self.db.execute(insert(Product).values(**product))  
-            await self.db.commit()
+            product_insert_stmt = insert(Product).values(**product).returning(Product.id)
+            result = await self.db.execute(product_insert_stmt)
+            await self.db.flush()  # Flush to make sure the product ID is available even if not committed yet.
+            product_id = result.fetchone()
+            product_id_value = product_id[0] if product_id else None
+
+            # Only proceed to insert descriptions if a product ID was obtained
+            if product_id_value is not None:
+                for description in descriptions:
+                    description_insert_stmt = insert(ProductDescription).values(product_id=product_id_value, **description)
+                    await self.db.execute(description_insert_stmt)
+                await self.db.commit()  # Commit at the end to ensure all inserts are done in a single transaction
+                return product_id_value
+
         except Exception as e:
+            await self.db.rollback()  # Rollback in case of any error during the transaction
             print(f"Exception during product insertion: {e}")
-            return False 
-        return True
+            return None  # Return None or raise an HTTPException for REST context
+
+        return None
     
     async def update_product(self, id: int, details: Dict[str, Any]):
         try:

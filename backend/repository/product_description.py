@@ -18,7 +18,7 @@ class ProductDescriptionRepo:
 
     async def update_product_description(self, id: int, details: Dict[str, Any]):
         try:
-            await self.db.execute(update(ProductDescription).where(ProductDescription.product_id == id).values(**details))
+            await self.db.execute(update(ProductDescription).where(ProductDescription.id == id).values(**details))
             await self.db.commit()
 
         except Exception as e:
@@ -38,5 +38,5 @@ class ProductDescriptionRepo:
     
     async def get_product_description_by_product_id(self, id: int):
         result =  await self.db.execute(select(ProductDescription).where(ProductDescription.product_id == id))
-        return result.scalars().one_or_none()
+        return result.scalars().all()
     

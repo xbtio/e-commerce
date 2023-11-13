@@ -65,6 +65,11 @@ class ReviewService:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
         return result
     
+    async def get_review_by_product_id(self, id: int):
+        review_repo = ReviewRepo(self.db)
+        result = await review_repo.get_review_by_product_id(id)
+        return result
+    
     async def delete_review(self, id: int):
         try:
             review_repo = ReviewRepo(self.db)
