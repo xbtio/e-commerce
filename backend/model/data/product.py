@@ -24,6 +24,7 @@ class Product(Base):
     review = relationship("Review", backref="product", cascade="all, delete-orphan")
     product_description = relationship("ProductDescription", backref="product", cascade="all, delete-orphan")
     shopping_cart_item = relationship("ShoppingCartItem", backref="product", cascade="all, delete-orphan")
+    product_for_order = relationship("ProductForOrder", backref="product", cascade="all, delete-orphan")
 
 class ProductDescription(Base):
     __tablename__ = 'product_description'

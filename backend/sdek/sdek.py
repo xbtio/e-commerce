@@ -7,6 +7,7 @@ from typing import Union
 import asyncio
 from .schema import Order, Sender, Phone, Recipient, ToLocation, FromLocation, Services, Packages
 from model.data.address import Address
+from model.data.model import User
 
 URL = 'https://api.cdek.ru/v2/oauth/token'
 
@@ -21,33 +22,41 @@ async def get_token():
         if result is not None:
             return result.group(1)
         return None
+    
+async def make_order_request(order: Order):
+    token = await get_token()
+    headers = {'Authorization': f'Bearer {token}'}
+    if token:
+        async with httpx.AsyncClient(headers=headers) as client:
+            response = await client.post('https://api.cdek.ru/v2/orders', json=order.model_dump())
+            return response.json()
+    return None
 
 
 class SdekService:
-    async def get_status_about_order(self, sdeck_id: int):
+    async def get_status_about_order(self, sdek_id: int):
         token = await get_token()
         headers = {'Authorization': f'Bearer {token}'}
         if token:
             async with httpx.AsyncClient(headers=headers) as client:
-                response = await client.get(f'https://api.cdek.ru/v2/orders?cdek_number={sdeck_id}')
+                response = await client.get(f'https://api.cdek.ru/v2/orders?cdek_number={sdek_id}')
                 return response.json()['entity']
         return None
     
-    async def create_order(self, name_of_recepient: str, email: str, phone_of_recepient: str, additional_num: str, address_of_recepient: Address, comment: str):
-        token = await get_token()
-        headers = {'Authorization': f'Bearer {token}'}
+    async def create_order(self, name_of_recepient: str, user_email: str, phone_of_recepient: str, additional_num: str, address_of_recepient: Address):
         phone = Phone(number="905073361421")
         sender = Sender(company="NVİTAL SAĞLIK HİZMETLERİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ", name="Айгерим", phones=[phone])
-        recipient = Recipient(name=name_of_recepient, email=email, phones=[Phone(number=phone_of_recepient, additional=additional_num)])
+        recipient = Recipient(name=name_of_recepient, email=user_email, phones=[Phone(number=phone_of_recepient, additional=additional_num)])
         
         from_location = FromLocation(code=11354, city="Стамбул", country_code="TR", country="Турция", region="Стамбул", region_code=788, longitude=0, latitude=0, address="Cumhuriyet, Kazım Orbay Cd. no3, 34381 Şişli/İstanbul, Турция")
         to_location = ToLocation(postal_code=address_of_recepient.postal_code, country_code=address_of_recepient.code, city=address_of_recepient.city, address=address_of_recepient.address)
-        order = Order(type=2, tariff_code=293, sender=sender, recipient=recipient, from_location=from_location, to_location=to_location, packages=[Packages(number="1", weight=1, length=1, width=1, height=1, comment=comment)])
-        if token:
-            async with httpx.AsyncClient(headers=headers) as client:
-                response = await client.post('https://api.cdek.ru/v2/orders', json=order.model_dump())
-                return response.json()
-        return None
+
+        
+
+        order = Order(type=2, tariff_code=293, sender=sender, recipient=recipient, from_location=from_location, to_location=to_location, packages=[Packages(number="1", weight=1, length=1, width=1, height=1, comment='Коробка')])
+        
+        response = await make_order_request(order)
+        return response
     
     async def refuse_order(self, sdek_uuid: str):
         token = await get_token()

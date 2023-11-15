@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from country.country import get_country_info
 from fastapi import HTTPException, status
 from repository.address import AddressRepo
+from model.data.address import Address
 
 
 
@@ -20,7 +21,7 @@ class AddressService:
     async def delete_address(self, id: int):
         return await self.repo.delete_address(id)
     
-    async def get_address_by_user_id(self, id: int):
+    async def get_address_by_user_id(self, id: int) -> Address:
         result = await self.repo.get_address_by_user_id(id)
         if result is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")

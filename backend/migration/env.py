@@ -11,6 +11,7 @@ from model.data.blog import Blog, ReviewBlog
 from model.data.address import Address
 from model.data.order import Order
 from model.data.cart import ShoppingCart, ShoppingCartItem
+from model.data.sdek_order import OrderRequest
 
 from alembic import context
 

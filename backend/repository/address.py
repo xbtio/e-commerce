@@ -35,8 +35,8 @@ class AddressRepo:
             return False
         return True
     
-    async def get_address_by_user_id(self, id: int):
-        result = await self.db.execute(select(Address).where(Address.user_id == id))
+    async def get_address_by_user_id(self, user_id: int):
+        result = await self.db.execute(select(Address).where(Address.user_id == user_id))
         return result.scalars().one_or_none()
     
     async def get_all_address(self):

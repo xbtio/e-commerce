@@ -15,4 +15,5 @@ class Address(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id'), nullable=False)
 
     user = relationship("User", back_populates="address")
+    order_request = relationship("OrderRequest", back_populates="address")
 
