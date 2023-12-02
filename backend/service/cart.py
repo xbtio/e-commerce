@@ -28,18 +28,53 @@ class ShoppingCartItemService:
             print(e)
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
         return True
-
+    
 class ShoppingCartService:
     def __init__(self, db: AsyncSession):
         self.cart_repo = ShoppingCartRepo(db)
     
     async def get_all_carts(self):
         try:
-            result = await self.cart_repo.get_all_carts()
+            carts = await self.cart_repo.get_all_carts()
+            
+            if carts is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Cart not found")
+            if carts:
+                all_carts_info = []
+                for cart in carts:
+                    cart_info = {
+                        "cart_id": cart.id,
+                        "user_id": cart.user_id,
+                        "user": {
+                            "name": cart.user.name,
+                            "email": cart.user.email,                            
+                        },
+                        "items": [
+                            {
+                                "item_id": item.id,
+                                "product_id": item.product_id,
+                                "quantity": item.quantity,
+                                "product": {
+                                    "id": item.product.id,
+                                    "name": item.product.name,
+                                    "description": item.product.description,
+                                    "price": item.product.price,
+                                    "number_of_ratings": item.product.number_of_ratings,
+                                    "rating": item.product.rating,
+                                    "image": item.product.image,
+                                    "category_id": item.product.category_id,
+                                    "weigth": item.product.weigth
+                                    # Include other necessary product fields here
+                                }
+                            } for item in cart.items
+                        ]
+                    }
+                    all_carts_info.append(cart_info)
+
+                return all_carts_info
         except Exception as e:
             print(e)
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal Server Error")
-        return result
     
     async def get_cart_info_by_user_id(self, user_id):
         try:
@@ -68,11 +103,9 @@ class ShoppingCartService:
                             "item_id": item.id,
                             "product_id": product.id,
                             "product_name": product.name,
-                            "product_description": product.description,
                             "product_price": product.price,
                             "product_image": product.image,
                             "product_rating": product.rating,
-                            "product_number_of_ratings": product.number_of_ratings,
                             "product_weight": product.weigth,
                             "quantity": item.quantity
                         })

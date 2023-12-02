@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from config import DB_PASS, DB_HOST, DB_PORT, DB_NAME, DB_USER
 from db_config.db_connection import Base
-from model.data.product import Product
+from model.data.product import Product, ParentCategory
 from model.data.model import User
 from model.data.review import Review
 from model.data.blog import Blog, ReviewBlog

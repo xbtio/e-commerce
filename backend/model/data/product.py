@@ -39,9 +39,14 @@ class Category(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     description: Mapped[str] = mapped_column(String(350), nullable=False)
+    parent_category_id: Mapped[int] = mapped_column(Integer, ForeignKey('parent_category.id'))
 
     # product = relationship("Product", back_populates="category")
 
+class ParentCategory(Base):
+    __tablename__ = 'parent_category'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(150), nullable=False)
 
-
+    category = relationship("Category", backref="parent_category", cascade="all, delete-orphan")
 

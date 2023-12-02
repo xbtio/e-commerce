@@ -8,6 +8,7 @@ import asyncio
 from .schema import Order, Sender, Phone, Recipient, ToLocation, FromLocation, Services, Packages
 from model.data.address import Address
 from model.data.model import User
+import uuid
 
 URL = 'https://api.cdek.ru/v2/oauth/token'
 
@@ -34,16 +35,16 @@ async def make_order_request(order: Order):
 
 
 class SdekService:
-    async def get_status_about_order(self, sdek_id: int):
+    async def get_status_about_order(self, sdek_id):
         token = await get_token()
         headers = {'Authorization': f'Bearer {token}'}
         if token:
             async with httpx.AsyncClient(headers=headers) as client:
-                response = await client.get(f'https://api.cdek.ru/v2/orders?cdek_number={sdek_id}')
+                response = await client.get(f'https://api.cdek.ru/v2/orders/{sdek_id}')
                 return response.json()['entity']
         return None
     
-    async def create_order(self, name_of_recepient: str, user_email: str, phone_of_recepient: str, additional_num: str, address_of_recepient: Address):
+    async def create_order(self, name_of_recepient: str, user_email: str, phone_of_recepient: str, additional_num: str, address_of_recepient: Address, length: int, width: int, heigth: int, weigth: int):
         phone = Phone(number="905073361421")
         sender = Sender(company="NVİTAL SAĞLIK HİZMETLERİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ", name="Айгерим", phones=[phone])
         recipient = Recipient(name=name_of_recepient, email=user_email, phones=[Phone(number=phone_of_recepient, additional=additional_num)])
@@ -53,7 +54,7 @@ class SdekService:
 
         
 
-        order = Order(type=2, tariff_code=293, sender=sender, recipient=recipient, from_location=from_location, to_location=to_location, packages=[Packages(number="1", weight=1, length=1, width=1, height=1, comment='Коробка')])
+        order = Order(type=2, tariff_code=293, sender=sender, recipient=recipient, from_location=from_location, to_location=to_location, packages=[Packages(number="1", weight=weigth, length=length, width=width, height=heigth, comment='Коробка')])
         
         response = await make_order_request(order)
         return response

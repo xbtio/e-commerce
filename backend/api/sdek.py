@@ -1,3 +1,4 @@
+from itertools import product
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +16,7 @@ from service.cart import ShoppingCartService
 from repository.order_request import OrderRequestRepo
 from repository.product_for_order import ProductForOrderRepo
 from fastapi import HTTPException
+from repository.product import ProductRepo
 
 from sdek.schema import Phone
 
@@ -44,6 +46,9 @@ async def create_order_request(name_of_recepient: str, phone_of_recepient: str, 
 
     cart_info = await cart_service.get_cart_info_by_user_id(user.id)
     address_of_user = await address_service.get_address_by_user_id(user.id)
+
+    product_repo = ProductRepo(db)
+
     if cart_info is not None:
         cart_info = cart_info['items']
         weight = 0
@@ -54,6 +59,11 @@ async def create_order_request(name_of_recepient: str, phone_of_recepient: str, 
     if order_request_id is not None:
         for item in cart_info:
             await product_for_order_repo.insert_product_for_order({'order_request_id': order_request_id, 'product_id': item['product_id'], 'quantity': item['quantity']})
+            product = await product_repo.get_product_by_id(item['product_id'])
+            if product is not None:
+                await product_repo.update_product(item['product_id'], {'quantity': product.quantity - item['quantity']})
+            else:
+                return JSONResponse({"message": "order request creation failed"})
         return JSONResponse({"message": "order request created successfully"})
     return JSONResponse({"message": "order request creation failed"})
 
@@ -96,13 +106,24 @@ async def get_order_requests(db: AsyncSession = Depends(get_async_session)):
         raise HTTPException(status_code=500, detail="Error retrieving order requests")
 
 @router.put("/admin/orders/{order_request_id}/approve", dependencies=[Depends(current_superuser)])
-async def approve_order_request(order_request_id: int, db: AsyncSession = Depends(get_async_session)):
+async def approve_order_request(order_request_id: int, length: int, heigth: int, width: int,db: AsyncSession = Depends(get_async_session)):
     order_request_repo = OrderRequestRepo(db)
     sdek_service = SdekService()
+    address_service = AddressService(db)
 
-    
     order_request = await order_request_repo.get_order_request_by_id(order_request_id)
-    order_request_repo.update_order_request(order_request_id, {'order_status': 'approved'})
+    if order_request is not None:
+        address = await address_service.get_address_by_id(order_request.address_id)
+        if address is not None:
+            result = await sdek_service.create_order(name_of_recepient=order_request.name_of_recipient, user_email=order_request.user_email, phone_of_recepient=order_request.phone_of_recipient, additional_num=order_request.additional_num, address_of_recepient=address, length=length, heigth=heigth, width=width, weigth=order_request.order_weigth)
+            if result is not None:
+
+                await order_request_repo.update_order_request(order_request_id, {'order_status': 'approved'})
+                return JSONResponse({"message": "order approved successfully", "data": result})
+
+            return JSONResponse({"message": "order approving failed"})
+
+    return JSONResponse({"message": "order approving failed"})
 
 
 @router.post("/order/refusal")

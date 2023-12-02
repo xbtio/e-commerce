@@ -1,9 +1,10 @@
 from typing import Dict, Any, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from model.data.cart import ShoppingCart, ShoppingCartItem
+from model.data.model import User
 from model.data.product import Product
-from sqlalchemy import update, delete, select, insert
-from sqlalchemy.orm import joinedload, contains_eager, selectinload
+from sqlalchemy import AliasedReturnsRows, update, delete, select, insert
+from sqlalchemy.orm import joinedload, contains_eager, selectinload, aliased
 
 class ShoppingCartRepo:
     def __init__(self, db: AsyncSession) -> None:
@@ -45,8 +46,18 @@ class ShoppingCartRepo:
         return True
     
     async def get_all_carts(self):
-        result = await self.db.execute(select(ShoppingCart))
-        return result.scalars().all()
+        query = (
+        select(ShoppingCart)
+        .options(
+            joinedload(ShoppingCart.user),
+            selectinload(ShoppingCart.items).selectinload(ShoppingCartItem.product)
+        )
+    )
+        
+    
+        result = await self.db.execute(query)
+        carts = result.scalars().all()
+        return carts
     
     async def get_cart_info_by_user_id(self, user_id: int):
         query = (

@@ -26,6 +26,11 @@ async def create_cart_item(cart_item: ShoppingCartItemCreateSchema, current_user
         return JSONResponse({"message": "cart item created successfully"})
     return JSONResponse({"message": "cart item creation failed"})
 
+@router.get('/get_all', dependencies=[Depends(current_superuser)])
+async def get_all_cart_items(db: AsyncSession = Depends(get_async_session)):
+    cart_item_service = ShoppingCartService(db)
+    result = await cart_item_service.get_all_carts()
+    return result
 
 @router.delete("/{id}")
 async def delete_cart_item(id: int, db: AsyncSession = Depends(get_async_session)):

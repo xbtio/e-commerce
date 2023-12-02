@@ -19,7 +19,7 @@ def verification_token(username: str, to_email: str, token: str):
 
     email.set_content(
         '<div>'
-        f'<h1 style="color: red;">Hello, {username}, here is your verification token - {token}</h1>'
+        f'<h1 style="color: red;">Hello, {username}, here is your verification token - http://localhost:5173/auth/verify-token/{token}</h1>'
         '</div>',
         subtype='html'
     )

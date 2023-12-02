@@ -26,6 +26,12 @@ class AddressService:
         if result is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
         return result
+
+    async def get_address_by_id(self, id: int) -> Address:
+        result = await self.repo.get_address_by_id(id)
+        if result is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Address not found")
+        return result
     
     async def get_all_address(self):
         return await self.repo.get_all_address()
