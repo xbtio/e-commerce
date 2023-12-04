@@ -18,6 +18,8 @@ from repository.product_for_order import ProductForOrderRepo
 from fastapi import HTTPException
 from repository.product import ProductRepo
 
+from model.request.order_request import OrderRequestCreate
+
 from sdek.schema import Phone
 
 fastapi_users = FastAPIUsers[User, int](get_user_manager, [auth_backend])
@@ -28,16 +30,16 @@ current_superuser = fastapi_users.current_user(active=True, superuser=True)
 router = APIRouter()
 
 @router.get("/callback")
-async def callback(sdek_id: int):
+async def callback(cdek_number):
     sdek_service = SdekService()
-    result = await sdek_service.get_status_about_order(sdek_id)
+    result = await sdek_service.get_status_about_order(cdek_number)
     if result is not None:
         return JSONResponse({"message": "order info received successfully", "data": result})
     return JSONResponse({"message": "order info receiving failed"})
 
 
 @router.post("/order")
-async def create_order_request(name_of_recepient: str, phone_of_recepient: str, additional_num: str, user: User = Depends(current_user), db: AsyncSession = Depends(get_async_session)):
+async def create_order_request(order_req: OrderRequestCreate, user: User = Depends(current_user), db: AsyncSession = Depends(get_async_session)):
     address_service = AddressService(db)
     cart_service = ShoppingCartService(db)
 
@@ -55,7 +57,7 @@ async def create_order_request(name_of_recepient: str, phone_of_recepient: str, 
         for item in cart_info:
             weight += item['product_weight'] * item['quantity']
 
-    order_request_id = await order_request_repo.insert_order_request({'user_email': user.email, 'name_of_recipient': name_of_recepient, 'phone_of_recipient': phone_of_recepient, 'additional_num': additional_num, 'address_id': address_of_user.id, 'order_weigth': weight})
+    order_request_id = await order_request_repo.insert_order_request({'user_email': user.email, 'name_of_recipient': order_req.name, 'phone_of_recipient': order_req.phone, 'additional_num': order_req.additional_num, 'address_id': address_of_user.id, 'order_weigth': weight, 'passport_series': order_req.passport_series, 'passport_number': order_req.passport_number, 'passport_date_of_issue': order_req.passport_date_of_issue, 'passport_organization': order_req.passport_organization, 'tin': order_req.tin})
     if order_request_id is not None:
         for item in cart_info:
             await product_for_order_repo.insert_product_for_order({'order_request_id': order_request_id, 'product_id': item['product_id'], 'quantity': item['quantity']})
@@ -115,7 +117,7 @@ async def approve_order_request(order_request_id: int, length: int, heigth: int,
     if order_request is not None:
         address = await address_service.get_address_by_id(order_request.address_id)
         if address is not None:
-            result = await sdek_service.create_order(name_of_recepient=order_request.name_of_recipient, user_email=order_request.user_email, phone_of_recepient=order_request.phone_of_recipient, additional_num=order_request.additional_num, address_of_recepient=address, length=length, heigth=heigth, width=width, weigth=order_request.order_weigth)
+            result = await sdek_service.create_order(name_of_recepient=order_request.name_of_recipient, user_email=order_request.user_email, phone_of_recepient=order_request.phone_of_recipient, additional_num=order_request.additional_num, address_of_recepient=address, length=length, heigth=heigth, width=width, weigth=order_request.order_weigth, passport_series=order_request.passport_series, passport_number=order_request.passport_number, passport_date_of_issue=order_request.passport_date_of_issue, passport_organization=order_request.passport_organization, tin=order_request.tin)
             if result is not None:
 
                 await order_request_repo.update_order_request(order_request_id, {'order_status': 'approved'})

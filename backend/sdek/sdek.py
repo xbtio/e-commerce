@@ -8,7 +8,8 @@ import asyncio
 from .schema import Order, Sender, Phone, Recipient, ToLocation, FromLocation, Services, Packages
 from model.data.address import Address
 from model.data.model import User
-import uuid
+from typing import Optional
+import datetime
 
 URL = 'https://api.cdek.ru/v2/oauth/token'
 
@@ -35,19 +36,19 @@ async def make_order_request(order: Order):
 
 
 class SdekService:
-    async def get_status_about_order(self, sdek_id):
+    async def get_status_about_order(self, cdek_number):
         token = await get_token()
         headers = {'Authorization': f'Bearer {token}'}
         if token:
             async with httpx.AsyncClient(headers=headers) as client:
-                response = await client.get(f'https://api.cdek.ru/v2/orders/{sdek_id}')
-                return response.json()['entity']
+                response = await client.get(f'https://api.cdek.ru/v2/orders?cdek_number={cdek_number}')
+                return response.json()
         return None
     
-    async def create_order(self, name_of_recepient: str, user_email: str, phone_of_recepient: str, additional_num: str, address_of_recepient: Address, length: int, width: int, heigth: int, weigth: int):
+    async def create_order(self, name_of_recepient: str, user_email: str, phone_of_recepient: str, additional_num: str, address_of_recepient: Address, length: int, width: int, heigth: int, weigth: int, passport_series: Optional[str], passport_number: Optional[str], passport_date_of_issue: Optional[datetime.date] = None, passport_organization: Optional[str] = None, tin: Optional[str] = None):
         phone = Phone(number="905073361421")
-        sender = Sender(company="NVİTAL SAĞLIK HİZMETLERİ SANAYİ VE TİCARET LİMİTED ŞİRKETİ", name="Айгерим", phones=[phone])
-        recipient = Recipient(name=name_of_recepient, email=user_email, phones=[Phone(number=phone_of_recepient, additional=additional_num)])
+        sender = Sender(company="Invittal", name="Айгерим", phones=[phone])
+        recipient = Recipient(name=name_of_recepient, email=user_email, phones=[Phone(number=phone_of_recepient, additional=additional_num)], passport_series=passport_series, passport_number=passport_number, passport_date_of_issue=passport_date_of_issue, passport_organization=passport_organization, tin=tin)
         
         from_location = FromLocation(code=11354, city="Стамбул", country_code="TR", country="Турция", region="Стамбул", region_code=788, longitude=0, latitude=0, address="Cumhuriyet, Kazım Orbay Cd. no3, 34381 Şişli/İstanbul, Турция")
         to_location = ToLocation(postal_code=address_of_recepient.postal_code, country_code=address_of_recepient.code, city=address_of_recepient.city, address=address_of_recepient.address)

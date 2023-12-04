@@ -63,6 +63,7 @@
 '''
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+import datetime
 
 class Phone(BaseModel):
     number: str
@@ -73,15 +74,22 @@ class Sender(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     phones: list[Phone]
+    passport_series: Optional[str] = None
+    passport_number: Optional[str] = None
+    passport_date_of_issue: Optional[datetime.date] = None
+    passport_organization: Optional[str] = None
+    tin: Optional[str] = None
+    passport_date_of_birth: Optional[datetime.date] = None
 
 class Recipient(BaseModel):
     company: Optional[str] = None
     name: str
     passport_series: Optional[str] = None
     passport_number: Optional[str] = None
-    passport_date_of_issue: Optional[str] = None
+    passport_date_of_issue: Optional[datetime.date] = None
     passport_organization: Optional[str] = None
     tin: Optional[str] = None
+    passport_date_of_birth: Optional[datetime.date] = None
     email: Optional[EmailStr] = None
     phones: list[Phone]
 

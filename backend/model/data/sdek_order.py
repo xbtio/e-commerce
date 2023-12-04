@@ -1,4 +1,4 @@
-from sqlalchemy import Time, Column, ForeignKey, Integer, String, Float, Date, MetaData
+from sqlalchemy import Time, Column, ForeignKey, Integer, String, Float, DateTime, MetaData
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from db_config.db_connection import Base
 from sqlalchemy.orm import backref
@@ -14,6 +14,11 @@ class OrderRequest(Base):
     address_id: Mapped[int] = mapped_column(Integer, ForeignKey('address.id'), nullable=False)
     order_weigth: Mapped[int] = mapped_column(Integer, nullable=False)
     order_status: Mapped[str] = mapped_column(String(150), default='pending', nullable=False)
+    passport_series: Mapped[str] = mapped_column(String(4), nullable=True)
+    passport_number: Mapped[str] = mapped_column(String(30), nullable=True)
+    passport_date_of_issue: Mapped[DateTime] = mapped_column(DateTime, nullable=True)
+    passport_organization: Mapped[str] = mapped_column(String(255), nullable=True)
+    tin: Mapped[str] = mapped_column(String(12), nullable=True)
 
     address = relationship("Address", back_populates="order_request")
     product_for_order = relationship("ProductForOrder", back_populates="order_request", cascade="all, delete-orphan")
