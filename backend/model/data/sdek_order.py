@@ -19,6 +19,7 @@ class OrderRequest(Base):
     passport_date_of_issue: Mapped[DateTime] = mapped_column(DateTime, nullable=True)
     passport_organization: Mapped[str] = mapped_column(String(255), nullable=True)
     tin: Mapped[str] = mapped_column(String(12), nullable=True)
+    created_at: Mapped[str] = mapped_column(String(20), nullable=False)
 
     address = relationship("Address", back_populates="order_request")
     product_for_order = relationship("ProductForOrder", back_populates="order_request", cascade="all, delete-orphan")

@@ -23,7 +23,7 @@ router = APIRouter()
 async def create_category(category: CategorySchema, db: AsyncSession = Depends(get_async_session)):
     category_service = CategoryService(db)
     content_dict = category.model_dump()
-    result = category_service.create_category(content_dict)
+    result = await category_service.create_category(content_dict)
     if result:
         return JSONResponse({"message": "category created successfully"})
     return JSONResponse({"message": "category creation failed"})

@@ -57,7 +57,7 @@ async def create_order_request(order_req: OrderRequestCreate, user: User = Depen
         for item in cart_info:
             weight += item['product_weight'] * item['quantity']
 
-    order_request_id = await order_request_repo.insert_order_request({'user_email': user.email, 'name_of_recipient': order_req.name, 'phone_of_recipient': order_req.phone, 'additional_num': order_req.additional_num, 'address_id': address_of_user.id, 'order_weigth': weight, 'passport_series': order_req.passport_series, 'passport_number': order_req.passport_number, 'passport_date_of_issue': order_req.passport_date_of_issue, 'passport_organization': order_req.passport_organization, 'tin': order_req.tin})
+    order_request_id = await order_request_repo.insert_order_request({'user_email': user.email, 'name_of_recipient': order_req.name, 'phone_of_recipient': order_req.phone, 'additional_num': order_req.additional_num, 'address_id': address_of_user.id, 'order_weigth': weight, 'passport_series': order_req.passport_series, 'passport_number': order_req.passport_number, 'passport_date_of_issue': order_req.passport_date_of_issue, 'passport_organization': order_req.passport_organization, 'tin': order_req.tin, 'created_at': order_req.created_at})
     if order_request_id is not None:
         for item in cart_info:
             await product_for_order_repo.insert_product_for_order({'order_request_id': order_request_id, 'product_id': item['product_id'], 'quantity': item['quantity']})

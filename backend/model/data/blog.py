@@ -24,7 +24,7 @@ class ReviewBlog(Base):
     name_of_user: Mapped[str] = mapped_column(String(150), nullable=False)
     comment: Mapped[str] = mapped_column(String(500), nullable=False)
     date: Mapped[Date] = mapped_column(Date, nullable=False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id'), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('user.id', ondelete='cascade'), nullable=False)
     blog_id: Mapped[int] = mapped_column(Integer, ForeignKey('blog.id'), nullable=False)
 
     user = relationship("User", back_populates="review_blog")

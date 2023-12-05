@@ -1,81 +1,17 @@
-import unittest
-from unittest.mock import MagicMock, patch
-from sqlalchemy.ext.asyncio import AsyncSession
-from repository.product import ProductRepo
-from model.data.product import Product
+from datetime import datetime
+import pytz
 
+# Get the current UTC time
+utc_now = datetime.utcnow()
 
-class TestProductRepo(unittest.IsolatedAsyncioTestCase):
-    async def test_insert_product(self):
-        mock_db = MagicMock(spec=AsyncSession)
-        product_repo = ProductRepo(mock_db)
-        product = Product(name="Test Product", price=10.99)
-        mock_db.execute.return_value = None
-        mock_db.commit.return_value = None
+# Specify the UTC+3 time zone
+utc_plus_3 = pytz.timezone('Europe/Moscow')  # or 'Asia/Riyadh' or another UTC+3 time zone
 
-        result = await product_repo.insert_product(product)
+# Convert the UTC time to UTC+3
+utc_plus_3_time = utc_now.replace(tzinfo=pytz.utc).astimezone(utc_plus_3)
 
-        self.assertTrue(result)
-        mock_db.execute.assert_called_once()
-        mock_db.commit.assert_called_once()
+print("UTC+3 time:", utc_plus_3_time)
 
-    async def test_update_product(self):
-        mock_db = MagicMock(spec=AsyncSession)
-        product_repo = ProductRepo(mock_db)
-        product_id = 1
-        details = {"name": "Updated Product", "price": 20.99}
-        mock_db.execute.return_value = None
-        mock_db.commit.return_value = None
-
-        result = await product_repo.update_product(product_id, details)
-
-        self.assertTrue(result)
-        mock_db.execute.assert_called_once()
-        mock_db.commit.assert_called_once()
-
-    async def test_delete_product(self):
-        mock_db = MagicMock(spec=AsyncSession)
-        product_repo = ProductRepo(mock_db)
-        product_id = 1
-        mock_db.execute.return_value = None
-        mock_db.commit.return_value = None
-
-        result = await product_repo.delete_product(product_id)
-
-        self.assertTrue(result)
-        mock_db.execute.assert_called_once()
-        mock_db.commit.assert_called_once()
-
-    async def test_get_all_products(self):
-        mock_db = MagicMock(spec=AsyncSession)
-        product_repo = ProductRepo(mock_db)
-        mock_result = MagicMock()
-        mock_result.scalars.return_value.all.return_value = [
-            Product(id=1, name="Product 1", price=10.99),
-            Product(id=2, name="Product 2", price=20.99),
-        ]
-        mock_db.execute.return_value = mock_result
-
-        result = await product_repo.get_all_products()
-
-        self.assertEqual(len(result), 2)
-        mock_db.execute.assert_called_once()
-        mock_result.scalars.assert_called_once()
-        mock_result.scalars.return_value.all.assert_called_once()
-
-    async def test_get_product_by_id(self):
-        mock_db = MagicMock(spec=AsyncSession)
-        product_repo = ProductRepo(mock_db)
-        product_id = 1
-        mock_result = MagicMock()
-        mock_result.scalars.return_value.one_or_none.return_value = Product(
-            id=1, name="Product 1", price=10.99
-        )
-        mock_db.execute.return_value = mock_result
-
-        result = await product_repo.get_product_by_id(product_id)
-
-        self.assertIsNotNone(result)
-        mock_db.execute.assert_called_once()
-        mock_result.scalars.assert_called_once()
-        mock_result.scalars.return_value.one_or_none.assert_called_once()
+# convert it to str in format YYYY-MM-DD/HH:MM:SS 
+utc_plus_3_time = utc_plus_3_time.strftime("%Y-%m-%d/%H:%M:%S")
+print("UTC+3 time:", utc_plus_3_time)

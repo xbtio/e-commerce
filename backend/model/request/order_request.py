@@ -23,6 +23,23 @@ class OrderRequest(Base):
 
 '''
 
+def get_date_now():
+    from datetime import datetime
+    import pytz
+
+    # Get the current UTC time
+    utc_now = datetime.utcnow()
+
+    # Specify the UTC+3 time zone
+    utc_plus_3 = pytz.timezone('Europe/Moscow')  # or 'Asia/Riyadh' or another UTC+3 time zone
+
+    # Convert the UTC time to UTC+3
+    utc_plus_3_time = utc_now.replace(tzinfo=pytz.utc).astimezone(utc_plus_3)
+    utc_plus_3_time = utc_plus_3_time.strftime("%Y-%m-%d/%H:%M:%S")
+    print("UTC+3 time:", utc_plus_3_time)
+
+    return utc_plus_3_time
+
 class OrderRequestCreate(BaseModel):
     name: str
     phone: str
@@ -32,3 +49,4 @@ class OrderRequestCreate(BaseModel):
     passport_date_of_issue: Optional[datetime.date] = None
     passport_organization: Optional[str] = None
     tin: Optional[str] = None
+    created_at: str = get_date_now()
