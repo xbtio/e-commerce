@@ -3,13 +3,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from model.data.product import Product, ProductDescription
 from model.request.product_description import ProductDescriptionCreateSchema
 from sqlalchemy import update, delete, select, insert
+from model.data.product import ProductImage
+from sqlalchemy.orm import joinedload, contains_eager, selectinload, aliased
 
 
 class ProductRepo:
     def __init__(self, db: AsyncSession) -> None:
         self.db = db
     
-    async def insert_product(self, product: Dict, descriptions: List[Dict[str, Any]]):
+    async def insert_product(self, product: Dict, descriptions: List[Dict[str, Any]], product_images: List[Dict[str, Any]]):
         try:
             product_insert_stmt = insert(Product).values(**product).returning(Product.id)
             result = await self.db.execute(product_insert_stmt)
@@ -19,6 +21,9 @@ class ProductRepo:
 
             # Only proceed to insert descriptions if a product ID was obtained
             if product_id_value is not None:
+                for image in product_images:
+                    image_insert_stmt = insert(ProductImage).values(product_id=product_id_value, **image)
+                    await self.db.execute(image_insert_stmt)
                 for description in descriptions:
                     description_insert_stmt = insert(ProductDescription).values(product_id=product_id_value, **description)
                     await self.db.execute(description_insert_stmt)
@@ -57,5 +62,7 @@ class ProductRepo:
         return result.scalars().all()
     
     async def get_product_by_id(self, id: int):
-        result =  await self.db.execute(select(Product).where(Product.id == id))
+        # get info about product_description and product_image joined with product
+        result = await self.db.execute(select(Product).where(Product.id == id).options(selectinload(Product.product_description), selectinload(Product.product_image)))
         return result.scalars().one_or_none()
+        

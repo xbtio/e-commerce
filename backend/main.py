@@ -11,7 +11,7 @@ from auth.manager import get_user_manager
 from auth.auth import auth_backend
 from auth.schemas import UserCreate, UserRead, UserUpdate
 
-from api import product, category, review, blog, review_blog, sdek, address, product_description, cart, parent_category
+from api import product, category, review, blog, review_blog, sdek, address, product_description, cart, parent_category, product_image
 from config import REDIS_HOST, REDIS_PORT
 
 
@@ -62,6 +62,7 @@ app.include_router(review_blog.router, prefix="/api/review_blog", tags=["review_
 app.include_router(sdek.router, prefix="/api/sdek", tags=["sdek"])
 app.include_router(address.router, prefix='/api/address', tags=['address'])
 app.include_router(product_description.router, prefix='/api/product_description', tags=['product_description'])
+app.include_router(product_image.router, prefix='/api/product_image', tags=['product_image'])
 
 origins = [
     "http://localhost",

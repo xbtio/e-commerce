@@ -18,13 +18,15 @@ class Product(Base):
     rating: Mapped[float] = mapped_column(Float, nullable=False)
     number_of_ratings: Mapped[int] = mapped_column(Integer, nullable=False)
     weigth: Mapped[int] = mapped_column(Integer, nullable=False)
-
+    
 
     category = relationship("Category", backref="product")
     review = relationship("Review", backref="product", cascade="all, delete-orphan")
     product_description = relationship("ProductDescription", backref="product", cascade="all, delete-orphan")
     shopping_cart_item = relationship("ShoppingCartItem", backref="product", cascade="all, delete-orphan")
     product_for_order = relationship("ProductForOrder", backref="product", cascade="all, delete-orphan")
+    product_image = relationship("ProductImage", backref="product", cascade="all, delete-orphan")
+
 
 class ProductDescription(Base):
     __tablename__ = 'product_description'
@@ -49,4 +51,11 @@ class ParentCategory(Base):
     name: Mapped[str] = mapped_column(String(150), nullable=False)
 
     category = relationship("Category", backref="parent_category", cascade="all, delete-orphan")
+
+
+class ProductImage(Base):
+    __tablename__ = 'product_image'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    product_id: Mapped[int] = mapped_column(Integer, ForeignKey('product.id', ondelete='cascade'))
+    image: Mapped[str] = mapped_column(String(150), nullable=False)
 
