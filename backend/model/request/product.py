@@ -21,6 +21,9 @@ class ProductCreateSchema(BaseModel):
     category_id: int
     image: Optional[str] = None
     weigth: int
+    length: int
+    width: int
+    height: int
  
 class ProductUpdateSchema(BaseModel):
     name: Optional[str] = None
@@ -29,5 +32,8 @@ class ProductUpdateSchema(BaseModel):
     quantity: Optional[int] = None
     category_id: Optional[int] = None
     image: Optional[str] = None
-    weigth: int
+    weigth: Optional[int] = None
+    length: Optional[int] = None
+    width: Optional[int] = None
+    height: Optional[int] = None
    

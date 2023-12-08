@@ -11,7 +11,7 @@ from auth.manager import get_user_manager
 from auth.auth import auth_backend
 from auth.schemas import UserCreate, UserRead, UserUpdate
 
-from api import product, category, review, blog, review_blog, sdek, address, product_description, cart, parent_category, product_image
+from api import product, category, review, blog, review_blog, sdek, address, product_description, cart, parent_category, product_image, users
 from config import REDIS_HOST, REDIS_PORT
 
 
@@ -50,6 +50,12 @@ app.include_router(
     fastapi_users.get_users_router(UserRead, UserUpdate),
     prefix="/users",
     tags=["users"],
+)
+
+app.include_router(
+    users.router,
+    prefix="/user",
+    tags=["user"],
 )
 
 app.include_router(product.router, prefix="/api/product", tags=["product"])

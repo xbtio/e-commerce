@@ -18,6 +18,9 @@ class Product(Base):
     rating: Mapped[float] = mapped_column(Float, nullable=False)
     number_of_ratings: Mapped[int] = mapped_column(Integer, nullable=False)
     weigth: Mapped[int] = mapped_column(Integer, nullable=False)
+    length: Mapped[int] = mapped_column(Integer, nullable=False)
+    width: Mapped[int] = mapped_column(Integer, nullable=False)
+    height: Mapped[int] = mapped_column(Integer, nullable=False)
     
 
     category = relationship("Category", backref="product")
